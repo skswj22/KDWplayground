@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport"
+        content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width" />
+    <title>카카오 로그인 TEST</title>
+    <script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
+
+</head>
+
+<body>
+    <a id="kakao-login-btn"></a>
+    <p id="form">전체</p>
+    이름 : <input id="nameform" value=""></input><br />
+    이메일 : <input id="idform" value=""></input><br />
+    생월일 : <input id="birthdayform" value=""></input><br />
+    고유넘버 : <input id="numform" value=""></input><br>
+    프로필 사진 : <img src="#" id="profileImg">
+
+    <script type='text/javascript'>
+        //<![CDATA[
+        // 사용할 앱의 JavaScript 키를 설정해 주세요.
+        Kakao.init('83c86c1e87e7e584d7c37d03c4dfe8f4');
+        // 카카오 로그인 버튼을 생성합니다.
+
+        var Name = '';
+        var EmailID = '';
+        var birthday = '';
+        var NumID = '';
+        var Month = '';
+        var Day = '';
+        var profileImg = '';
+
+        Kakao.Auth.createLoginButton({
+            container: '#kakao-login-btn',
+            success: function (authObj) {
+                // 로그인 성공시, API를 호출합니다.
+                Kakao.API.request({
+                    url: '/v2/user/me',
+                    success: function (res) {
+                        alert(JSON.stringify(res));
+
+                        Name = JSON.stringify(res.kakao_account.profile.nickname).replace(/"/gi,"");
+                        EmailID = JSON.stringify(res.kakao_account.email).replace(/"/gi,"");
+                        birthday = JSON.stringify(res.kakao_account.birthday).replace(/"/gi,"");
+                        NumID = JSON.stringify(res.id).replace(/"/gi,"");
+                        profileImg = JSON.stringify(res.kakao_account.profile.profile_image_url).replace(/"/gi,"");
+                        document.getElementById('form').innerHTML = JSON.stringify(res);
+
+                        return chgform();
+
+                    },
+                    fail: function (error) {
+                        alert(JSON.stringify(error));
+                    }
+                });
+            },
+            fail: function (err) {
+                alert(JSON.stringify(err));
+            }
+        });
+
+        function chgform() {
+
+            Month = birthday.substring(0,2);
+            Day = birthday.substring(2,4);
+
+            document.getElementById('nameform').value = Name;
+            document.getElementById('idform').value = EmailID;
+            document.getElementById('birthdayform').value = Month + "월" + Day + "일";
+            document.getElementById('numform').value = NumID;
+            document.getElementById('profileImg').src=profileImg;
+        }
+
+
+        //]]>
+    </script>
+
+</body>
+
+</html>
